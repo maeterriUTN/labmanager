@@ -4,21 +4,27 @@ import android.content.ContentValues.TAG
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var bottomNavView : BottomNavigationView
     private lateinit var navHostFragment : NavHostFragment
+    public  var usermail : String ="@"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -62,6 +68,7 @@ class MainActivity : AppCompatActivity() {
             .addOnFailureListener { exception ->
                 Log.d(TAG, "get failed with ", exception)
             }
+// A partir de acá es para el logueo
 
          val signInLauncher = registerForActivityResult(
             FirebaseAuthUIActivityResultContract(),
@@ -72,7 +79,7 @@ class MainActivity : AppCompatActivity() {
         val providers = arrayListOf(
             AuthUI.IdpConfig.EmailBuilder().build(),
             //AuthUI.IdpConfig.PhoneBuilder().build(),
-            AuthUI.IdpConfig.GoogleBuilder().build(),
+            //AuthUI.IdpConfig.GoogleBuilder().build(),
             //AuthUI.IdpConfig.FacebookBuilder().build(),
             //AuthUI.IdpConfig.TwitterBuilder().build(),
         )
@@ -81,12 +88,38 @@ class MainActivity : AppCompatActivity() {
         val signInIntent = AuthUI.getInstance()
             .createSignInIntentBuilder()
             .setAvailableProviders(providers)
+            .setIsSmartLockEnabled(false)
             .build()
         signInLauncher.launch(signInIntent)
 
+        usermail= FirebaseAuth.getInstance().currentUser.toString()
+
+        // Obtén una instancia de FirebaseAuth
+        val firebaseAuth = FirebaseAuth.getInstance()
+
+// Verifica si el usuario está autenticado
+        val currentUser: FirebaseUser? = firebaseAuth.currentUser
+        if (currentUser != null) {
+            // El usuario está autenticado, puedes obtener sus detalles
+            val uid = currentUser.uid
+            val displayName = currentUser.displayName
+            val email = currentUser.email
+            val photoUrl = currentUser.photoUrl
+
+            // Realiza las operaciones necesarias con los detalles del usuario
+            // ...
+
+            // Ejemplo de impresión de los detalles del usuario
+            println("UID del usuario: $uid")
+            println("Nombre de usuario: $displayName")
+            println("Correo electrónico: $email")
+            println("URL de la foto de perfil: $photoUrl")
+        } else {
+            // El usuario no está autenticado
+            println("El usuario no está autenticado")
+        }
 
 
- 
 
 
     }
@@ -95,6 +128,8 @@ class MainActivity : AppCompatActivity() {
         if (result.resultCode == AppCompatActivity.RESULT_OK) {
             // Successfully signed in
             val user = FirebaseAuth.getInstance().currentUser
+
+            //Toast.makeText(this, "El mail es ${usermail}", Toast.LENGTH_SHORT).show()
             // ...
         } else {
             // Sign in failed. If response is null the user canceled the
