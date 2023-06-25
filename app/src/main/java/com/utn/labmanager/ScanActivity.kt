@@ -1,17 +1,12 @@
-package com.utn.labmanager.fragments
+package com.utn.labmanager
 
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import androidx.lifecycle.ViewModelProvider
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.util.Size
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
 import android.widget.Toast
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
@@ -21,72 +16,37 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.navigation.fragment.findNavController
-import com.google.android.material.snackbar.Snackbar
-import com.utn.labmanager.MainActivity
-import com.utn.labmanager.R
-import com.utn.labmanager.ScanActivity
 import com.utn.labmanager.entities.QrCodeAnalyzer
-//import com.utn.labmanager.textureView
 
-class ScanFragment : Fragment() {
+import com.utn.labmanager.fragments.ScanFragment
 
-    private lateinit var v : View
-    private lateinit var button_scan : Button
-    private lateinit var textureView: PreviewView
+
+lateinit var textureView2: PreviewView
+class ScanActivity : AppCompatActivity() {
+
 
     companion object {
-        fun newInstance() = ScanFragment()
-        private const val REQUEST_CAMERA_PERMISSION = 10
+        const val REQUEST_CAMERA_PERMISSION = 10
     }
 
-    private lateinit var viewModel: ScanViewModel
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        v= inflater.inflate(R.layout.fragment_scan, container, false)
-        button_scan= v.findViewById(R.id.button_scan)
-        textureView = v.findViewById(R.id.texture_view)
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_scan)
+        textureView2 = findViewById(R.id.texture_view2)
         if (isCameraPermissionGranted()) {
-            textureView.post { startCamera() }
+            textureView2.post { startCamera() }
         } else {
             ActivityCompat.requestPermissions(
-                requireActivity(),
+                this,
                 arrayOf(Manifest.permission.CAMERA),
-                ScanActivity.REQUEST_CAMERA_PERMISSION
+                REQUEST_CAMERA_PERMISSION
             )
         }
-
-        return v
     }
 
-
-
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(ScanViewModel::class.java)
-        // TODO: Use the ViewModel
-    }
-
-
-    override fun onStart() {
-        super.onStart()
-
-
-        button_scan.setOnClickListener {
-            var intent = Intent(context, ScanActivity::class.java)
-            startActivity(intent)
-            Snackbar.make(v,"Botón Apretado", Snackbar.LENGTH_LONG).show()
-
-        }
-    }
 
     private fun startCamera() {
-        var cameraProviderFuture = ProcessCameraProvider.getInstance(requireActivity())
+        var cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         val cameraSelector =
             CameraSelector.Builder()
                 .requireLensFacing(CameraSelector.LENS_FACING_BACK).build()
@@ -95,7 +55,7 @@ class ScanFragment : Fragment() {
             .setTargetResolution(Size(400, 400))
             .build()
 
-        previewConfig.setSurfaceProvider(textureView.createSurfaceProvider())
+        previewConfig.setSurfaceProvider(textureView2.createSurfaceProvider())
 
 
         val imageCapture = ImageCapture.Builder()
@@ -106,13 +66,13 @@ class ScanFragment : Fragment() {
             // Set initial target rotation, we will have to call this again if rotation changes
             // during the lifecycle of this use case
             .build()
-        val executor = ContextCompat.getMainExecutor(requireContext())
+        val executor = ContextCompat.getMainExecutor(this)
         val imageAnalyzer = ImageAnalysis.Builder().build().also {
             it.setAnalyzer(executor, QrCodeAnalyzer { qrCodes ->
                 qrCodes?.forEach {
                     Log.d("MainActivity", "QR Code detected: ${it.rawValue}.")
-                    Toast.makeText(context, "Se detectó un Qr ${it.rawValue}", Toast.LENGTH_SHORT).show()
-                    var intent = Intent(context, MainActivity::class.java)
+                    Toast.makeText(this, "Se detectó un Qr ${it.rawValue}", Toast.LENGTH_SHORT).show()
+                    var intent = Intent(this, MainActivity::class.java)
                     startActivity(intent)
                 }
             })
@@ -139,7 +99,7 @@ class ScanFragment : Fragment() {
 
     private fun isCameraPermissionGranted(): Boolean {
         val selfPermission =
-            ContextCompat.checkSelfPermission(requireActivity().baseContext, Manifest.permission.CAMERA)
+            ContextCompat.checkSelfPermission(baseContext, Manifest.permission.CAMERA)
         return selfPermission == PackageManager.PERMISSION_GRANTED
     }
 
@@ -149,15 +109,15 @@ class ScanFragment : Fragment() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == ScanActivity.REQUEST_CAMERA_PERMISSION) {
+        if (requestCode == REQUEST_CAMERA_PERMISSION) {
             if (isCameraPermissionGranted()) {
-                textureView.post { startCamera() }
+                textureView2.post { startCamera() }
             } else {
-                Toast.makeText(context, "Camera permission is required.", Toast.LENGTH_SHORT).show()
-                //finish()
+                Toast.makeText(this, "Camera permission is required.", Toast.LENGTH_SHORT).show()
+                finish()
             }
         }
     }
 
-
 }
+
