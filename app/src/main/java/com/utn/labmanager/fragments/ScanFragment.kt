@@ -1,6 +1,7 @@
 package com.utn.labmanager.fragments
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.lifecycle.ViewModelProvider
@@ -78,9 +79,11 @@ class ScanFragment : Fragment() {
 
 
         button_scan.setOnClickListener {
-            var intent = Intent(context, ScanActivity::class.java)
-            startActivity(intent)
+
             Snackbar.make(v,"Botón Apretado", Snackbar.LENGTH_LONG).show()
+
+
+
 
         }
     }
@@ -112,8 +115,26 @@ class ScanFragment : Fragment() {
                 qrCodes?.forEach {
                     Log.d("MainActivity", "QR Code detected: ${it.rawValue}.")
                     Toast.makeText(context, "Se detectó un Qr ${it.rawValue}", Toast.LENGTH_SHORT).show()
-                    var intent = Intent(context, MainActivity::class.java)
-                    startActivity(intent)
+
+                    val builder = AlertDialog.Builder(context)
+                    builder.setTitle("Reactivo Detectado")
+                    builder.setMessage("Confirme agregar ${it.rawValue}")
+
+
+                    builder.setPositiveButton(android.R.string.yes) { dialog, which ->
+                        Toast.makeText(context,
+                            android.R.string.yes, Toast.LENGTH_SHORT).show()
+                    }
+
+                    builder.setNegativeButton(android.R.string.no) { dialog, which ->
+                        Toast.makeText(context,
+                            android.R.string.no, Toast.LENGTH_SHORT).show()
+                    }
+
+                    builder.show()
+
+
+
                 }
             })
 

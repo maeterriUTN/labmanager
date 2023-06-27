@@ -29,7 +29,7 @@ class QrCodeAnalyzer(
         val rotation = rotationDegreesToFirebaseRotation(image.imageInfo.rotationDegrees)
         image.image?.let {
             val imageValue = InputImage.fromMediaImage(it, image.imageInfo.rotationDegrees)
-            val options = BarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_QR_CODE,Barcode.FORMAT_CODE_128).build()
+            val options = BarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_QR_CODE,Barcode.FORMAT_CODE_128,Barcode.FORMAT_CODABAR).build()
             val scanner = BarcodeScanning.getClient(options)
             scanner.process(imageValue)
                 .addOnCompleteListener { barcodes ->
