@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
             .addOnSuccessListener { document ->
                 if (document != null) {
 
-                    Log.d(TAG, document.get("name").toString())
+                    Log.d(TAG, document.get("Name").toString())
                     Log.d(TAG, "DocumentSnapshot data: ${document.data}")
                 } else {
                     Log.d(TAG, "No such document")

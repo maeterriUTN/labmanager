@@ -8,6 +8,7 @@
     tools:context=".fragments.ListFragment">
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/view_reagents"
         android:layout_width="410dp"
         android:layout_height="555dp"
         app:layout_constraintEnd_toEndOf="parent"
