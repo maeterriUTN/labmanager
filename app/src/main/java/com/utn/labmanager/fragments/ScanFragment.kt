@@ -22,18 +22,19 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModel
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.utn.labmanager.MainActivity
 import com.utn.labmanager.R
-import com.utn.labmanager.ScanActivity
+
 import com.utn.labmanager.entities.QrCodeAnalyzer
 //import com.utn.labmanager.textureView
 
 class ScanFragment : Fragment() {
 
     private lateinit var v : View
-    private lateinit var button_scan : Button
+    //private lateinit var button_scan : Button
     private lateinit var textureView: PreviewView
 
     companion object {
@@ -48,8 +49,8 @@ class ScanFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         v= inflater.inflate(R.layout.fragment_scan, container, false)
-        button_scan= v.findViewById(R.id.button_scan)
         textureView = v.findViewById(R.id.texture_view)
+        ScanViewModel.database_try()
 
         if (isCameraPermissionGranted()) {
             textureView.post { startCamera() }
@@ -57,7 +58,7 @@ class ScanFragment : Fragment() {
             ActivityCompat.requestPermissions(
                 requireActivity(),
                 arrayOf(Manifest.permission.CAMERA),
-                ScanActivity.REQUEST_CAMERA_PERMISSION
+                REQUEST_CAMERA_PERMISSION
             )
         }
 
@@ -77,15 +78,6 @@ class ScanFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
-
-        button_scan.setOnClickListener {
-
-            Snackbar.make(v,"Botón Apretado", Snackbar.LENGTH_LONG).show()
-
-
-
-
-        }
     }
 
     private fun startCamera() {
@@ -124,6 +116,7 @@ class ScanFragment : Fragment() {
                     builder.setPositiveButton(android.R.string.yes) { dialog, which ->
                         Toast.makeText(context,
                             android.R.string.yes, Toast.LENGTH_SHORT).show()
+                        ScanViewModel.getreagent(it.rawValue.toString())
                     }
 
                     builder.setNegativeButton(android.R.string.no) { dialog, which ->
@@ -170,7 +163,7 @@ class ScanFragment : Fragment() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == ScanActivity.REQUEST_CAMERA_PERMISSION) {
+        if (requestCode == REQUEST_CAMERA_PERMISSION) {
             if (isCameraPermissionGranted()) {
                 textureView.post { startCamera() }
             } else {
