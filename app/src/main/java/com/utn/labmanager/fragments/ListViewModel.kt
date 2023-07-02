@@ -79,7 +79,15 @@ class ListViewModel : ViewModel() {
 
 
         }
+     fun generate_data_string() : String{
+         var output :String = ""
+         for (index in ReagentToView )
+         {
+             output=output+ index.code + " " + index.name + " " + index.quantity.toString() +"\n"
+
+         }
+         return output
+     }
+
     }
-
-
 }

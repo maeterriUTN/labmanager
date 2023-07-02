@@ -70,7 +70,7 @@ class ListFragment : Fragment() {
 
             val sendIntent: Intent = Intent().apply {
                 action = Intent.ACTION_SEND
-                putExtra(Intent.EXTRA_TEXT, "Prueba de mandar los reactivos")
+                putExtra(Intent.EXTRA_TEXT, ListViewModel.generate_data_string())
                 type = "text/plain"
             }
 
