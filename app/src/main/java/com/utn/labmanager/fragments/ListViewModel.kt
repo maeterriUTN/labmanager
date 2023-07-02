@@ -2,6 +2,7 @@ package com.utn.labmanager.fragments
 
 import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.utn.labmanager.entities.reagent
@@ -64,5 +65,21 @@ class ListViewModel : ViewModel() {
 
         }
 
+
+        fun database_decrement(code : String,pos : Int)
+        {
+            val db = Firebase.firestore
+            val reagents = db.collection("reagents")
+            reagents.document(code).update("Quantity", FieldValue.increment(-1))
+            ReagentToView[pos].quantity=ReagentToView[pos].quantity-1
+            if (ReagentToView[pos].quantity<=0){
+                ReagentToView.removeAt(pos)
+            }
+            println("Código: $code decrementado")
+
+
+        }
     }
+
+
 }
