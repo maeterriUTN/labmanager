@@ -3,24 +3,28 @@ package com.utn.labmanager.fragments
 import android.content.Intent
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.os.Handler
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.utn.labmanager.R
 import com.utn.labmanager.adapters.reagentAdapter
 import com.utn.labmanager.entities.reagent
+import kotlinx.coroutines.launch
 
 class ListFragment : Fragment() {
     lateinit var v : View
     lateinit var ReagentList : RecyclerView
     lateinit var buttonPedir : Button
     lateinit var adapter : reagentAdapter
-    var ReagentToView : MutableList<reagent> = mutableListOf()
+
     companion object {
         fun newInstance() = ListFragment()
     }
@@ -34,11 +38,7 @@ class ListFragment : Fragment() {
         v = inflater.inflate(R.layout.fragment_list, container, false)
         ReagentList = v.findViewById(R.id.view_reagents)
         buttonPedir =v.findViewById(R.id.button_pedir)
-        ReagentToView.add(reagent("123456789","Glucosa", 1))
-        ReagentToView.add(reagent("987654321","Acido urico", 2))
-        ReagentToView.add(reagent("987654321","Colesterol", 2))
-        ReagentToView.add(reagent("987654321","AHCV", 3))
-        ReagentToView.add(reagent("987654321","Vitamina D", 4))
+        ListViewModel.listInit()
 
         return v
     }
@@ -46,16 +46,25 @@ class ListFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(ListViewModel::class.java)
+
+
         // TODO: Use the ViewModel
     }
 
     override fun onStart() {
         super.onStart()
-        adapter = reagentAdapter(ReagentToView){position ->
+        adapter = reagentAdapter(ListViewModel.ReagentToView){position ->
             onItemClick(position)
         }
         ReagentList.layoutManager= LinearLayoutManager(context)
         ReagentList.adapter=adapter
+        lifecycleScope.launch {
+            ListViewModel.ListFlow.collect { NewList ->
+
+                adapter.notifyDataSetChanged()
+                 Toast.makeText(context, "Datos actualizados", Toast.LENGTH_SHORT).show()
+            }
+        }
         buttonPedir.setOnClickListener {
 
             val sendIntent: Intent = Intent().apply {
@@ -74,4 +83,21 @@ class ListFragment : Fragment() {
 
             }
 
+    override fun onResume() {
+        super.onResume()
+        handler.postDelayed(actualizacionPeriodica, 1000)
+
+    }
+
+    private val handler = Handler()
+    private val actualizacionPeriodica = object : Runnable {
+        override fun run() {
+            // Realiza la lógica de actualización de la vista aquí
+            adapter.notifyDataSetChanged()
+
+            // Programa la siguiente actualización después de un cierto tiempo
+            handler.postDelayed(this, 1000) // 1000 ms = 1 segundo
+        }
+    }
 }
+
