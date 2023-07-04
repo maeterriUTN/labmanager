@@ -33,41 +33,7 @@ class MainActivity : AppCompatActivity() {
         bottomNavView = findViewById(R.id.bottom_bar)
         NavigationUI.setupWithNavController(bottomNavView, navHostFragment.navController)
         val db = Firebase.firestore
-        val user = hashMapOf(
-            "first" to "Ada",
-            "last" to "Lovelace",
-            "born" to 1815,
-        )
 
-
-        val cities = db.collection("cities")
-
-        val data1 = hashMapOf(
-            "name" to "San Francisco",
-            "state" to "CA",
-            "country" to "USA2",
-            "capital" to false,
-            "population" to 860000,
-            "regions" to listOf("west_coast", "norcal"),
-        )
-        data1.get("name")
-        cities.document("SF").set(data1)
-        cities.document("SF").update("population", FieldValue.increment(1000))
-
-        val docRef = db.collection("cities").document("SF")
-        docRef.get()
-            .addOnSuccessListener { document ->
-                if (document != null) {
-
-                    Log.d(TAG, document.get("Name").toString())
-                    Log.d(TAG, "DocumentSnapshot data: ${document.data}")
-                } else {
-                    Log.d(TAG, "No such document")
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.d(TAG, "get failed with ", exception)
-            }
 // A partir de acá es para el logueo
 
          val signInLauncher = registerForActivityResult(
@@ -94,30 +60,7 @@ class MainActivity : AppCompatActivity() {
 
         usermail= FirebaseAuth.getInstance().currentUser.toString()
 
-        // Obtén una instancia de FirebaseAuth
-        val firebaseAuth = FirebaseAuth.getInstance()
 
-// Verifica si el usuario está autenticado
-        val currentUser: FirebaseUser? = firebaseAuth.currentUser
-        if (currentUser != null) {
-            // El usuario está autenticado, puedes obtener sus detalles
-            val uid = currentUser.uid
-            val displayName = currentUser.displayName
-            val email = currentUser.email
-            val photoUrl = currentUser.photoUrl
-
-            // Realiza las operaciones necesarias con los detalles del usuario
-            // ...
-
-            // Ejemplo de impresión de los detalles del usuario
-            println("UID del usuario: $uid")
-            println("Nombre de usuario: $displayName")
-            println("Correo electrónico: $email")
-            println("URL de la foto de perfil: $photoUrl")
-        } else {
-            // El usuario no está autenticado
-            println("El usuario no está autenticado")
-        }
 
 
 

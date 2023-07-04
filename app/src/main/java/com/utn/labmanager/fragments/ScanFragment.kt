@@ -112,9 +112,9 @@ class ScanFragment : Fragment() {
                 qrCodes?.forEach {
                     if (scanned)
                     {scanned=false
-                        Log.d("MainActivity", "QR Code detected: ${it.rawValue}.")
-                    Toast.makeText(context, "Se detectó un Qr ${it.rawValue}", Toast.LENGTH_SHORT)
-                        .show()
+                        Log.d("MainActivity", "Código detectado: ${it.rawValue}.")
+                    //Toast.makeText(context, "Se detectó un Qr ${it.rawValue}", Toast.LENGTH_SHORT)
+                     //   .show()
                     val docRef = db.collection("reagents").document(it.rawValue.toString())
                     docRef.get()
                         .addOnSuccessListener { document ->
@@ -122,34 +122,41 @@ class ScanFragment : Fragment() {
 
                                 Log.d(ContentValues.TAG, document.get("Name").toString())
                                 Log.d(ContentValues.TAG, "DocumentSnapshot data: ${document.data}")
-                                val builder = AlertDialog.Builder(context)
-                                builder.setTitle("Reactivo Detectado")
-                                builder.setMessage(
-                                    "Confirme agregar ${
-                                        document.get("Name").toString()
-                                    }"
-                                )
+                                if (document.get("Name").toString()!="null") {
+                                    val builder = AlertDialog.Builder(context)
+                                    builder.setTitle("Reactivo Detectado")
+                                    builder.setMessage(
+                                        "Confirme agregar ${
+                                            document.get("Name").toString()
+                                        }"
+                                    )
 
 
-                                builder.setPositiveButton(android.R.string.yes) { dialog, which ->
-                                    Toast.makeText(
-                                        context,
-                                        android.R.string.yes, Toast.LENGTH_SHORT
-                                    ).show()
-                                    //ScanViewModel.getreagent(it.rawValue.toString())
-                                    ScanViewModel.database_try(it.rawValue.toString())
-                                    scanned=true
+                                    builder.setPositiveButton(android.R.string.yes) { dialog, which ->
+                                        //Toast.makeText(
+                                        //   context,
+                                        //    android.R.string.yes, Toast.LENGTH_SHORT
+                                        //).show()
+                                        //ScanViewModel.getreagent(it.rawValue.toString())
+                                        ScanViewModel.database_try(it.rawValue.toString())
+                                        scanned = true
+                                    }
+
+                                    builder.setNegativeButton(android.R.string.no) { dialog, which ->
+                                        Toast.makeText(
+                                            context,
+                                            android.R.string.no, Toast.LENGTH_SHORT
+                                        ).show()
+                                        scanned = true
+
+                                    }
+
+                                    builder.show()
                                 }
-
-                                builder.setNegativeButton(android.R.string.no) { dialog, which ->
-                                    Toast.makeText(
-                                        context,
-                                        android.R.string.no, Toast.LENGTH_SHORT
-                                    ).show()
-                                    scanned=true
+                                else{
+                                    Toast.makeText(context, "Código inválido", Toast.LENGTH_SHORT).show()
+                                    scanned = true
                                 }
-
-                                builder.show()
 
 
                             } else {
@@ -202,7 +209,7 @@ class ScanFragment : Fragment() {
             if (isCameraPermissionGranted()) {
                 textureView.post { startCamera() }
             } else {
-                Toast.makeText(context, "Camera permission is required.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Se requiere permiso de cámara", Toast.LENGTH_SHORT).show()
                 //finish()
             }
         }

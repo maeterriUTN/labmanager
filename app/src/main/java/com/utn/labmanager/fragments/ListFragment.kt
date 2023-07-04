@@ -63,7 +63,7 @@ class ListFragment : Fragment() {
             ListViewModel.ListFlow.collect { NewList ->
 
                 adapter.notifyDataSetChanged()
-                 Toast.makeText(context, "Datos actualizados", Toast.LENGTH_SHORT).show()
+                 //Toast.makeText(context, "Datos actualizados", Toast.LENGTH_SHORT).show()
             }
         }
         buttonPedir.setOnClickListener {
@@ -90,10 +90,10 @@ class ListFragment : Fragment() {
 
 
         builder.setPositiveButton(android.R.string.yes) { dialog, which ->
-            Toast.makeText(
-                context,
-                android.R.string.yes, Toast.LENGTH_SHORT
-            ).show()
+            //Toast.makeText(
+            //    context,
+            //    android.R.string.yes, Toast.LENGTH_SHORT
+            //).show()
             ListViewModel.database_decrement(ListViewModel.ReagentToView[pos].code,pos)
 
         }
